@@ -1,16 +1,17 @@
 resource "digitalocean_droplet" "vm_aula" {
   image  = "ubuntu-22-04-x64"
-  name   = var.droplet_name
+  name   = "${var.droplet_name}-${count.index}"
   region = var.droplet_region
   size   = var.droplet_size
 
   ssh_keys = [data.digitalocean_ssh_key.ssh_key.id]
+  count    = var.vms_count
 }
 
 resource "digitalocean_firewall" "firewall_aula" {
   name = "firewall-aula"
 
-  droplet_ids = [digitalocean_droplet.vm_aula.id]
+  droplet_ids = digitalocean_droplet.vm_aula[*].id
 
   inbound_rule {
     protocol         = "tcp"
